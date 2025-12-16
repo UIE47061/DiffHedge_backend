@@ -6,6 +6,9 @@ pydantic>=2.5.0
 # HTTP Client
 httpx>=0.25.0
 
+# Database
+supabase>=2.0.0
+
 # Environment Variables
 python-dotenv>=1.0.0
 
