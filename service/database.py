@@ -91,3 +91,30 @@ def db_get_pending_contracts():
     except Exception as e:
         print(f"Error getting pending contracts: {e}")
         return []
+
+def db_get_user_contracts(user_pubkey):
+    """獲取特定用戶的所有合約"""
+    try:
+        result = supabase.table('contracts').select('*').eq('user_pubkey', user_pubkey).order('created_at', desc=True).execute()
+        return result.data if result.data else []
+    except Exception as e:
+        print(f"Error getting user contracts: {e}")
+        return []
+
+def db_get_contracts_by_status(status):
+    """獲取特定狀態的所有合約"""
+    try:
+        result = supabase.table('contracts').select('*').eq('status', status).order('created_at', desc=True).execute()
+        return result.data if result.data else []
+    except Exception as e:
+        print(f"Error getting contracts by status: {e}")
+        return []
+
+def db_get_waiting_signature_contracts():
+    """獲取所有等待簽名的合約"""
+    try:
+        result = supabase.table('contracts').select('*').in_('status', ['WAITING_USER_SIG', 'WAITING_USER_SIG_REFUND']).order('created_at', desc=True).execute()
+        return result.data if result.data else []
+    except Exception as e:
+        print(f"Error getting waiting signature contracts: {e}")
+        return []

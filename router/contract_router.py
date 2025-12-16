@@ -8,7 +8,8 @@ from bitcoinutils.utils import tapleaf_tagged_hash, tweak_taproot_pubkey
 
 from service.database import (
     db_create_contract, db_get_contract, db_delete_contract, 
-    db_update_status, db_get_pending_contracts
+    db_update_status, db_get_pending_contracts, db_get_user_contracts,
+    db_get_contracts_by_status, db_get_waiting_signature_contracts
 )
 from service.bitcoin_service import (
     create_2of3_address, get_utxos, broadcast_tx, 
@@ -57,6 +58,24 @@ def get_contract_api(contract_id: int):
     if not contract:
         raise HTTPException(status_code=404, detail="Contract not found")
     return contract
+
+@router.get("/contracts/user/{user_pubkey}")
+def get_user_contracts(user_pubkey: str):
+    """獲取特定用戶的所有合約"""
+    contracts = db_get_user_contracts(user_pubkey)
+    return {"contracts": contracts, "count": len(contracts)}
+
+@router.get("/contracts/status/{status}")
+def get_contracts_by_status(status: str):
+    """獲取特定狀態的所有合約"""
+    contracts = db_get_contracts_by_status(status)
+    return {"contracts": contracts, "count": len(contracts)}
+
+@router.get("/contracts/waiting-signature")
+def get_waiting_signature_contracts():
+    """獲取所有等待用戶簽名的合約"""
+    contracts = db_get_waiting_signature_contracts()
+    return {"contracts": contracts, "count": len(contracts)}
 
 @router.post("/create_contract")
 def create_contract(req: ContractRequest):
